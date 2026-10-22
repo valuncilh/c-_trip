@@ -1,12 +1,12 @@
 {
   "metadata": {
     "title": "C++: от основ языка к инженерной практике",
-    "version": "1.3.1",
+    "version": "1.3.2",
     "language": "ru",
     "updated": "2026-10-22",
     "standard": "C++20 как основа; C++23/26 — отдельные заметки по поддержке компиляторов",
     "description": "Курс C++20 с интерактивными уроками, практикой, локальным Markdown-редактором, LaTeX-формулами и UML-диаграммами.",
-    "content_status": "v1.3.1: исправлен рендеринг блоков кода; добавлены пошаговые объяснения, корректно набранные формулы LaTeX и UML-диаграммы там, где они объясняют модель.",
+    "content_status": "v1.3.2: восстановлена полная навигация для 67 уроков; устранён дефект подсветки кода; добавлены контекстные UML-диаграммы и блочные формулы.",
     "method": "Практика ведётся параллельно теории. Прогресс отмечается после выполнения задач и проверки граничных случаев."
   },
   "learning_model": {
@@ -5293,6 +5293,86 @@
           "id": "T1-M2-L2",
           "title": "Строки и ввод-вывод",
           "file": "content/lessons/t1/t1_m2_l2.md"
+        },
+        {
+          "id": "T1-M3-L1",
+          "title": "Структура программы, заголовки и main",
+          "file": "content/lessons/t1/t1_m3_l1.md"
+        },
+        {
+          "id": "T1-M3-L2",
+          "title": "Операторы, приоритет и преобразования типов",
+          "file": "content/lessons/t1/t1_m3_l2.md"
+        },
+        {
+          "id": "T1-M3-L3",
+          "title": "Массивы, многомерные массивы и C-строки",
+          "file": "content/lessons/t1/t1_m3_l3.md"
+        },
+        {
+          "id": "T1-M3-L4",
+          "title": "Указатели, арифметика указателей и const",
+          "file": "content/lessons/t1/t1_m3_l4.md"
+        },
+        {
+          "id": "T1-M3-L5",
+          "title": "Функции: перегрузка, аргументы по умолчанию и рекурсия",
+          "file": "content/lessons/t1/t1_m3_l5.md"
+        },
+        {
+          "id": "T1-M3-L6",
+          "title": "Классы: конструкторы, инварианты, копирование и деструктор",
+          "file": "content/lessons/t1/t1_m3_l6.md"
+        },
+        {
+          "id": "T1-M4-L1",
+          "title": "Наследование, виртуальные методы и полиморфизм",
+          "file": "content/lessons/t1/t1_m4_l1.md"
+        },
+        {
+          "id": "T1-M4-L2",
+          "title": "Перегрузка операторов, enum и пространства имён",
+          "file": "content/lessons/t1/t1_m4_l2.md"
+        },
+        {
+          "id": "T1-M4-L3",
+          "title": "Исключения и гарантии безопасности",
+          "file": "content/lessons/t1/t1_m4_l3.md"
+        },
+        {
+          "id": "T1-M4-L4",
+          "title": "Файловые потоки и форматированный ввод-вывод",
+          "file": "content/lessons/t1/t1_m4_l4.md"
+        },
+        {
+          "id": "T1-M4-L5",
+          "title": "Лямбда-выражения, функциональные объекты и std::function",
+          "file": "content/lessons/t1/t1_m4_l5.md"
+        },
+        {
+          "id": "T1-M4-L6",
+          "title": "Контейнеры STL: выбор структуры и итераторы",
+          "file": "content/lessons/t1/t1_m4_l6.md"
+        },
+        {
+          "id": "T1-M4-L7",
+          "title": "Строки, string_view и кодировки",
+          "file": "content/lessons/t1/t1_m4_l7.md"
+        },
+        {
+          "id": "T1-M4-L8",
+          "title": "Шаблоны, специализация, concepts и constexpr",
+          "file": "content/lessons/t1/t1_m4_l8.md"
+        },
+        {
+          "id": "T1-M4-L9",
+          "title": "Алгоритмы STL и ranges",
+          "file": "content/lessons/t1/t1_m4_l9.md"
+        },
+        {
+          "id": "T1-M4-L10",
+          "title": "Идиомы C++: RAII, copy-and-swap и Rule of Five",
+          "file": "content/lessons/t1/t1_m4_l10.md"
         }
       ]
     },

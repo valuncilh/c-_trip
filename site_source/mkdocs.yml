@@ -1,0 +1,16 @@
+site_name: C++ Senior Course
+site_description: Инженерная траектория C++20 с практикой и проектами
+site_dir: site
+nav:
+  - Главная: README.md
+  - Программа курса: ../curriculum.json
+  - Уроки:
+      - Первые упражнения: ../content/lessons/FIRST_EXERCISES.md
+      - Шаблон урока: ../content/lessons/LESSON_TEMPLATE.md
+  - Проекты:
+      - Шаблон проекта: ../content/projects/PROJECT_TEMPLATE.md
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true

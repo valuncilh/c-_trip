@@ -27,6 +27,37 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
+      - name: Validate course data and JavaScript
+        run: |
+          python3 - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          html = Path("index.html").read_text(encoding="utf-8")
+          match = re.search(r"const DATA = (\{[\s\S]*?\});\s*\n", html)
+          assert match, "Embedded course DATA was not found"
+          data = json.loads(match.group(1))
+          curriculum = json.loads(Path("curriculum.json").read_text(encoding="utf-8"))
+          assert data == curriculum, "index.html and curriculum.json are out of sync"
+
+          lessons = [
+              lesson
+              for track in data["tracks"]
+              for module in track["modules"]
+              for lesson in module["lessons"]
+          ]
+          ids = [lesson["id"] for lesson in lessons]
+          assert len(ids) == len(set(ids)), "Duplicate lesson IDs found"
+          assert len(lessons) == 67, f"Expected 67 lessons, found {len(lessons)}"
+
+          scripts = re.findall(r"<script\\b[^>]*>([\\s\\S]*?)</script>", html)
+          assert scripts, "Inline JavaScript was not found"
+          Path("/tmp/course-script.js").write_text("\\n".join(scripts), encoding="utf-8")
+          print(f"Validated {len(lessons)} lessons across {len(data['tracks'])} tracks.")
+          PY
+          node --check /tmp/course-script.js
+
       - name: Build static site
         run: |
           mkdir -p _site

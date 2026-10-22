@@ -50,6 +50,9 @@ jobs:
           ids = [lesson["id"] for lesson in lessons]
           assert len(ids) == len(set(ids)), "Duplicate lesson IDs found"
           assert len(lessons) == 67, f"Expected 67 lessons, found {len(lessons)}"
+          nav_ids = [item["id"] for track in data.get("navigation", []) for item in track.get("lessons", [])]
+          assert len(nav_ids) == len(lessons) and set(nav_ids) == set(ids), "Navigation must include every lesson exactly once"
+          assert "function highlightCode(" in html, "Code highlighter definition is missing"
 
           scripts = re.findall(r"<script\b[^>]*>([\s\S]*?)</script>", html)
           assert scripts, "Inline JavaScript was not found"

@@ -2,11 +2,7 @@ name: Deploy C++ course to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - index.html
-      - .github/workflows/deploy-pages.yml
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -20,20 +16,12 @@ concurrency:
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
-      - name: Prepare static site
+      - name: Build static site
         run: |
           mkdir -p _site
           cp index.html _site/index.html

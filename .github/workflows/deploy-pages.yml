@@ -41,6 +41,16 @@ jobs:
           curriculum = json.loads(Path("curriculum.json").read_text(encoding="utf-8"))
           assert data == curriculum, "index.html and curriculum.json are out of sync"
 
+          project = next(
+              lesson
+              for track in data["tracks"]
+              for module in track["modules"]
+              for lesson in module["lessons"]
+              if lesson["id"] == "T11-M1-L1"
+          )
+          project_markdown = Path(project["markdown_path"]).read_text(encoding="utf-8")
+          assert "signal-analyzer/README.md" in project_markdown, "Project lesson must link the runnable engineering example"
+
           lessons = [
               lesson
               for track in data["tracks"]

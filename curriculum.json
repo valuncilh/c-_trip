@@ -1,12 +1,12 @@
 {
   "metadata": {
     "title": "C++: от основ языка к инженерной практике",
-    "version": "1.3.1",
+    "version": "1.4.0",
     "language": "ru",
     "updated": "2026-10-22",
     "standard": "C++20 как основа; C++23/26 — отдельные заметки по поддержке компиляторов",
-    "description": "Курс C++20 с интерактивными уроками, практикой, локальным Markdown-редактором, LaTeX-формулами и UML-диаграммами.",
-    "content_status": "v1.3.1: исправлен рендеринг блоков кода; добавлены пошаговые объяснения, корректно набранные формулы LaTeX и UML-диаграммы там, где они объясняют модель.",
+    "description": "Курс C++20 с интерактивными уроками, практикой, локальным Markdown-редактором, LaTeX-формулами, UML-диаграммами и дополнительными ссылками для углубления.",
+    "content_status": "v1.4.0: добавлены проверяемые дополнительные источники Metanit для базовых тем, пояснения о назначении внешнего чтения и отдельная карта покрытия. Содержание Metanit не копируется; внешние ссылки дополняют, но не заменяют авторские объяснения и практику.",
     "method": "Практика ведётся параллельно теории. Прогресс отмечается после выполнения задач и проверки граничных случаев."
   },
   "learning_model": {
@@ -21,7 +21,8 @@
       "Мини-проект",
       "Разбор компромиссов"
     ],
-    "mastery_gate": "Не переходить дальше, пока не можешь объяснить контракт, инварианты, сложность, граничные случаи и тесты."
+    "mastery_gate": "Не переходить дальше, пока не можешь объяснить контракт, инварианты, сложность, граничные случаи и тесты.",
+    "reading_policy": "Сначала изучай авторское объяснение и выполняй практику. Внешние главы Metanit используй для второго объяснения темы и дополнительного примера; затем самостоятельно сравни подходы и проверь код. Не копируй решения без понимания."
   },
   "tracks": [
     {
@@ -108,7 +109,14 @@
                 "Что произойдёт с файлом после перенаправления через > и через >>?",
                 "Почему одну и ту же относительную команду можно выполнить по-разному из разных каталогов?"
               ],
-              "markdown_path": "content/lessons/t0/t0_m1_l1.md"
+              "markdown_path": "content/lessons/t0/t0_m1_l1.md",
+              "references": [
+                {
+                  "title": "Metanit: руководство по C++",
+                  "url": "https://metanit.com/cpp/tutorial/",
+                  "note": "Дополнительное чтение по настройке среды и первой программе."
+                }
+              ]
             },
             {
               "id": "T0-M1-L2",
@@ -260,7 +268,14 @@
                 "Что такое единица трансляции и как она связана с .cpp-файлом?",
                 "Зачем собирать с -Wall -Wextra -Wpedantic, если программа уже запускается?"
               ],
-              "markdown_path": "content/lessons/t0/t0_m1_l3.md"
+              "markdown_path": "content/lessons/t0/t0_m1_l3.md",
+              "references": [
+                {
+                  "title": "Metanit: введение и настройка компилятора",
+                  "url": "https://metanit.com/cpp/tutorial/",
+                  "note": "Сверь варианты компилятора и параметры сборки; команды курса ориентированы прежде всего на Linux и CMake."
+                }
+              ]
             }
           ]
         }
@@ -350,7 +365,14 @@
                 "Почему signed overflow нельзя использовать как надёжный механизм циклического счёта?",
                 "Когда для сравнения double нужен абсолютный допуск, а когда относительный?"
               ],
-              "markdown_path": "content/lessons/t1/t1_m1_l1.md"
+              "markdown_path": "content/lessons/t1/t1_m1_l1.md",
+              "references": [
+                {
+                  "title": "Metanit: руководство по C++",
+                  "url": "https://metanit.com/cpp/tutorial/",
+                  "note": "Разделы о типах данных, преобразованиях и операциях."
+                }
+              ]
             },
             {
               "id": "T1-M1-L2",
@@ -502,7 +524,14 @@
                 "Когда параметр стоит передать по значению, а когда по const-ссылке?",
                 "Почему нельзя возвращать ссылку на локальную переменную?"
               ],
-              "markdown_path": "content/lessons/t1/t1_m1_l3.md"
+              "markdown_path": "content/lessons/t1/t1_m1_l3.md",
+              "references": [
+                {
+                  "title": "Определение и объявление функций",
+                  "url": "https://metanit.com/cpp/tutorial/4.1.php",
+                  "note": "Дополнительное объяснение функций; в курсе отдельно рассматриваются контракты и тестирование."
+                }
+              ]
             }
           ]
         },
@@ -733,7 +762,14 @@
                 ],
                 "markdown_path": "content/lessons/t1/t1_m3_l1.md"
               },
-              "markdown_path": "content/lessons/t1/t1_m3_l1.md"
+              "markdown_path": "content/lessons/t1/t1_m3_l1.md",
+              "references": [
+                {
+                  "title": "Структура программы",
+                  "url": "https://metanit.com/cpp/tutorial/2.1.php",
+                  "note": "Дополнительное объяснение инструкций и структуры программы."
+                }
+              ]
             },
             {
               "id": "T1-M3-L2",
@@ -936,7 +972,14 @@
                 ],
                 "markdown_path": "content/lessons/t1/t1_m3_l4.md"
               },
-              "markdown_path": "content/lessons/t1/t1_m3_l4.md"
+              "markdown_path": "content/lessons/t1/t1_m3_l4.md",
+              "references": [
+                {
+                  "title": "Что такое указатели",
+                  "url": "https://metanit.com/cpp/tutorial/3.1.php",
+                  "note": "Вводное объяснение указателей; правила времени жизни и владения дополнительно разбираются в курсе."
+                }
+              ]
             },
             {
               "id": "T1-M3-L5",
@@ -1143,7 +1186,14 @@
                 ],
                 "markdown_path": "content/lessons/t1/t1_m4_l1.md"
               },
-              "markdown_path": "content/lessons/t1/t1_m4_l1.md"
+              "markdown_path": "content/lessons/t1/t1_m4_l1.md",
+              "references": [
+                {
+                  "title": "Определение классов",
+                  "url": "https://metanit.com/cpp/tutorial/5.1.php",
+                  "note": "Базовая объектная модель перед разбором наследования и полиморфизма."
+                }
+              ]
             },
             {
               "id": "T1-M4-L2",
@@ -1277,7 +1327,14 @@
                 ],
                 "markdown_path": "content/lessons/t1/t1_m4_l3.md"
               },
-              "markdown_path": "content/lessons/t1/t1_m4_l3.md"
+              "markdown_path": "content/lessons/t1/t1_m4_l3.md",
+              "references": [
+                {
+                  "title": "Обработка исключений",
+                  "url": "https://metanit.com/cpp/tutorial/7.1.php",
+                  "note": "Внешнее объяснение try/catch; курс дополнительно рассматривает гарантии безопасности исключений."
+                }
+              ]
             },
             {
               "id": "T1-M4-L4",
@@ -1411,7 +1468,14 @@
                 ],
                 "markdown_path": "content/lessons/t1/t1_m4_l5.md"
               },
-              "markdown_path": "content/lessons/t1/t1_m4_l5.md"
+              "markdown_path": "content/lessons/t1/t1_m4_l5.md",
+              "references": [
+                {
+                  "title": "Руководство по C++: лямбда-выражения",
+                  "url": "https://metanit.com/cpp/tutorial/",
+                  "note": "Дополнительное чтение по захвату переменных и функциональным объектам."
+                }
+              ]
             },
             {
               "id": "T1-M4-L6",
@@ -1478,7 +1542,14 @@
                 ],
                 "markdown_path": "content/lessons/t1/t1_m4_l6.md"
               },
-              "markdown_path": "content/lessons/t1/t1_m4_l6.md"
+              "markdown_path": "content/lessons/t1/t1_m4_l6.md",
+              "references": [
+                {
+                  "title": "Руководство по C++: контейнеры",
+                  "url": "https://metanit.com/cpp/tutorial/",
+                  "note": "Используй главы о vector, итераторах, map и других контейнерах как дополнительный справочник."
+                }
+              ]
             },
             {
               "id": "T1-M4-L7",
@@ -1545,7 +1616,14 @@
                 ],
                 "markdown_path": "content/lessons/t1/t1_m4_l7.md"
               },
-              "markdown_path": "content/lessons/t1/t1_m4_l7.md"
+              "markdown_path": "content/lessons/t1/t1_m4_l7.md",
+              "references": [
+                {
+                  "title": "Руководство по C++: строки",
+                  "url": "https://metanit.com/cpp/tutorial/",
+                  "note": "Дополнительный справочник по string, string_view и операциям над строками."
+                }
+              ]
             },
             {
               "id": "T1-M4-L8",
@@ -1612,7 +1690,19 @@
                 ],
                 "markdown_path": "content/lessons/t1/t1_m4_l8.md"
               },
-              "markdown_path": "content/lessons/t1/t1_m4_l8.md"
+              "markdown_path": "content/lessons/t1/t1_m4_l8.md",
+              "references": [
+                {
+                  "title": "Шаблоны классов",
+                  "url": "https://metanit.com/cpp/tutorial/9.1.php",
+                  "note": "Дополнительный пример обобщённого типа."
+                },
+                {
+                  "title": "Шаблоны функций",
+                  "url": "https://metanit.com/cpp/tutorial/9.2.php",
+                  "note": "Дополнительное чтение по выводу параметров шаблона и обобщённым функциям."
+                }
+              ]
             },
             {
               "id": "T1-M4-L9",
@@ -1679,7 +1769,14 @@
                 ],
                 "markdown_path": "content/lessons/t1/t1_m4_l9.md"
               },
-              "markdown_path": "content/lessons/t1/t1_m4_l9.md"
+              "markdown_path": "content/lessons/t1/t1_m4_l9.md",
+              "references": [
+                {
+                  "title": "Руководство по C++: алгоритмы и представления",
+                  "url": "https://metanit.com/cpp/tutorial/",
+                  "note": "Дополнительные примеры алгоритмов STL и ranges."
+                }
+              ]
             },
             {
               "id": "T1-M4-L10",
@@ -1746,7 +1843,14 @@
                 ],
                 "markdown_path": "content/lessons/t1/t1_m4_l10.md"
               },
-              "markdown_path": "content/lessons/t1/t1_m4_l10.md"
+              "markdown_path": "content/lessons/t1/t1_m4_l10.md",
+              "references": [
+                {
+                  "title": "Руководство по C++: идиомы и управление ресурсами",
+                  "url": "https://metanit.com/cpp/tutorial/",
+                  "note": "Дополнительный контекст по RAII и идиомам; курс требует также описать гарантии исключений и тесты."
+                }
+              ]
             }
           ]
         }
@@ -2464,7 +2568,14 @@
                 "Когда выбирать unique_ptr, а когда shared_ptr?",
                 "Почему сырой указатель сам по себе не выражает владение объектом?"
               ],
-              "markdown_path": "content/lessons/t3/t3_m1_l2.md"
+              "markdown_path": "content/lessons/t3/t3_m1_l2.md",
+              "references": [
+                {
+                  "title": "Руководство по C++: динамическая память и smart-указатели",
+                  "url": "https://metanit.com/cpp/tutorial/",
+                  "note": "Сверь базовые сценарии unique_ptr и shared_ptr; отдельно изучи владение, RAII и циклические ссылки."
+                }
+              ]
             },
             {
               "id": "T3-M1-L3",
@@ -2540,7 +2651,14 @@
                 "Почему std::move сам не переносит данные, а лишь меняет категорию выражения?",
                 "Зачем при forwarding reference используется std::forward?"
               ],
-              "markdown_path": "content/lessons/t3/t3_m1_l3.md"
+              "markdown_path": "content/lessons/t3/t3_m1_l3.md",
+              "references": [
+                {
+                  "title": "Руководство по C++: семантика перемещения",
+                  "url": "https://metanit.com/cpp/tutorial/",
+                  "note": "Дополнительное чтение о move-конструкторе и move-присваивании."
+                }
+              ]
             }
           ]
         },
@@ -2698,7 +2816,19 @@
                 "Как concept делает ограничение шаблона явным?",
                 "Чем constexpr отличается от const и когда вычисление действительно происходит на этапе компиляции?"
               ],
-              "markdown_path": "content/lessons/t3/t3_m2_l2.md"
+              "markdown_path": "content/lessons/t3/t3_m2_l2.md",
+              "references": [
+                {
+                  "title": "Шаблоны классов",
+                  "url": "https://metanit.com/cpp/tutorial/9.1.php",
+                  "note": "Повторение шаблонов перед изучением concepts и constexpr."
+                },
+                {
+                  "title": "Шаблоны функций",
+                  "url": "https://metanit.com/cpp/tutorial/9.2.php",
+                  "note": "Сопоставь базовые шаблоны с ограничениями C++20."
+                }
+              ]
             },
             {
               "id": "T3-M2-L3",

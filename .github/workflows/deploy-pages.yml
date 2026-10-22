@@ -75,3 +75,11 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Smoke test published page
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          curl --fail --silent --show-error --retry 8 --retry-delay 5 "$PAGE_URL" -o /tmp/published.html
+          grep -Fq '<title>Вводный курс C++</title>' /tmp/published.html
+          grep -Fq 'function highlightCode(' /tmp/published.html

@@ -323,7 +323,7 @@ mark, .text-highlight { background: #fff1a8; color: #342d15; padding: 0 .12em; b
       <h2>Направления</h2>
       <input id="search" class="search" type="search" placeholder="Поиск по урокам, задачам…">
       <div class="progress"><span id="progressBar"></span></div>
-      <div class="muted" id="progressLabel" style="font-size:.88rem;margin-bottom:12px">0 из 51 уроков</div>
+      <div class="muted" id="progressLabel" style="font-size:.88rem;margin-bottom:12px">0 из 67 уроков</div>
       <div id="tracks"></div>
       <div class="actions"><button class="action" id="exportBtn">Экспорт прогресса</button><button class="action" id="resetBtn">Сбросить</button></div>
     </aside>
@@ -488,6 +488,39 @@ function renderTextBlocks(source) {
   flushParagraph();
   return out.join("");
 }
+function highlightCode(source, lang) {
+  const code = String(source || "");
+  const language = String(lang || "").toLowerCase();
+  const cpp = /^(cpp|c\+\+|c|h|hpp|cc|cxx)$/.test(language);
+  const shell = /^(bash|sh|shell|zsh|console|shellsession)$/.test(language);
+  if (!cpp && !shell) return escapeHtml(code);
+  const pattern = cpp
+    ? /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|#[ \t]*[A-Za-z_]\w*|\b(?:alignas|alignof|asm|auto|bool|break|case|catch|char|char8_t|char16_t|char32_t|class|concept|const|consteval|constexpr|constinit|continue|co_await|co_return|co_yield|decltype|default|delete|do|double|else|enum|explicit|export|extern|false|final|float|for|friend|if|inline|int|long|mutable|namespace|new|noexcept|nullptr|operator|override|private|protected|public|register|reinterpret_cast|requires|return|short|signed|sizeof|static|static_assert|static_cast|struct|switch|template|this|thread_local|throw|true|try|typedef|typeid|typename|union|unsigned|using|virtual|void|volatile|wchar_t|while)\b|\b(?:std::(?:array|byte|deque|map|optional|set|shared_ptr|string|string_view|unique_ptr|unordered_map|unordered_set|vector)|size_t|ptrdiff_t)\b|\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?[uUlLfF]*\b|[{}()[\];,.?:]|[-+*/%=&|!<>^~]+/g
+    : /#[^\n]*|"(?:\\.|[^"\\])*"|'[^']*'|\$\{?[A-Za-z_]\w*\}?|--?[A-Za-z][\w-]*|\b(?:cmake|ctest|g\+\+|clang\+\+|clang|gcc|git|make|ninja|python3|pytest|node|npm|docker|mkdir|cp|rm|ls|cd|sudo|chmod|find|grep|cat|echo)\b/g;
+  let result = "";
+  let cursor = 0;
+  for (const match of code.matchAll(pattern)) {
+    const value = match[0];
+    result += escapeHtml(code.slice(cursor, match.index));
+    let cls = "";
+    if (value.startsWith("//") || value.startsWith("/*") || (shell && value.startsWith("#"))) cls = "tok-comment";
+    else if (value.startsWith('"') || value.startsWith("'")) cls = "tok-string";
+    else if (shell && value.startsWith("$")) cls = "tok-variable";
+    else if (shell && /^--?[A-Za-z]/.test(value)) cls = "tok-option";
+    else if (shell && /^(cmake|ctest|g\+\+|clang\+\+|clang|gcc|git|make|ninja|python3|pytest|node|npm|docker|mkdir|cp|rm|ls|cd|sudo|chmod|find|grep|cat|echo)$/.test(value)) cls = "tok-command";
+    else if (value.startsWith("#")) cls = "tok-preprocessor";
+    else if (/^(true|false|nullptr)$/.test(value)) cls = "tok-constant";
+    else if (/^\d/.test(value)) cls = "tok-number";
+    else if (/^std::/.test(value) || /^(size_t|ptrdiff_t)$/.test(value)) cls = "tok-type";
+    else if (/^(alignas|alignof|asm|auto|bool|break|case|catch|char|char8_t|char16_t|char32_t|class|concept|const|consteval|constexpr|constinit|continue|co_await|co_return|co_yield|decltype|default|delete|do|double|else|enum|explicit|export|extern|false|final|float|for|friend|if|inline|int|long|mutable|namespace|new|noexcept|nullptr|operator|override|private|protected|public|register|reinterpret_cast|requires|return|short|signed|sizeof|static|static_assert|static_cast|struct|switch|template|this|thread_local|throw|true|try|typedef|typeid|typename|union|unsigned|using|virtual|void|volatile|wchar_t|while)$/.test(value)) cls = "tok-keyword";
+    else if (/^[{}()[\];,.?:]$/.test(value)) cls = "tok-punctuation";
+    else if (/^[-+*/%=&|!<>^~]+$/.test(value)) cls = "tok-operator";
+    result += cls ? '<span class="' + cls + '">' + escapeHtml(value) + '</span>' : escapeHtml(value);
+    cursor = match.index + value.length;
+  }
+  return result + escapeHtml(code.slice(cursor));
+}
+
 function richMd(source) {
   const fence = "\u0060\u0060\u0060";
   const splitPattern = new RegExp("(" + fence + "[\\s\\S]*?" + fence + "|\\$\\$[\\s\\S]*?\\$\\$|\\\\\\[[\\s\\S]*?\\\\\\])", "g");

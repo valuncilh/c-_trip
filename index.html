@@ -83,10 +83,14 @@ p { margin: 0 0 1.05em; }
   gap: 28px;
   align-items: start;
 }
-.layout > aside:first-child { grid-column: 1; grid-row: 1; }
-.layout > aside:nth-child(2) { grid-column: 1; grid-row: 2; }
-.layout > main { grid-column: 2; grid-row: 1 / span 2; min-width: 0; }
-.sidebar { position: static; max-height: none; overflow: visible; }
+.navcolumn {
+  grid-column: 1; grid-row: 1; position: sticky; top: 16px;
+  max-height: calc(100vh - 32px); overflow: auto; min-width: 0;
+  display: flex; flex-direction: column; gap: 12px;
+  scrollbar-width: thin; scrollbar-color: #c5ced8 transparent;
+}
+.layout > main { grid-column: 2; grid-row: 1; min-width: 0; }
+.sidebar { position: static; max-height: none; overflow: visible; flex: 0 0 auto; }
 .search {
   width: 100%;
   background: #fff;
@@ -165,6 +169,16 @@ code {
   overflow-wrap: anywhere;
 }
 pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; overflow-wrap: normal; }
+.tok-keyword { color: #8250df; font-weight: 650; }
+.tok-type { color: #0550ae; font-weight: 600; }
+.tok-string { color: #116329; }
+.tok-number { color: #953800; }
+.tok-comment { color: #6e7781; font-style: italic; }
+.tok-preprocessor { color: #cf222e; }
+.tok-operator { color: #8250df; }
+.tok-constant { color: #0550ae; font-weight: 650; }
+.tok-punctuation { color: #57606a; }
+
 .task { border: 1px solid var(--line); border-radius: 7px; margin: 14px 0; overflow: hidden; }
 .taskhead { padding: 13px 17px; background: #f0f4f8; font-weight: 700; line-height: 1.5; }
 .taskbody { padding: 16px 18px; }
@@ -211,14 +225,13 @@ pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; 
   border-radius: 0 5px 5px 0;
   margin: 18px 0;
 }
-@media (min-width: 1250px) {
-  .layout > aside:first-child, .layout > aside:nth-child(2) { padding: 16px; }
-}
+@media (min-width: 1250px) { .sidebar { padding: 16px; } }
 @media (max-width: 900px) {
   body { font-size: 16px; }
   .wrap { padding: 18px 14px 30px; }
   .layout { grid-template-columns: minmax(0, 1fr); gap: 16px; }
-  .layout > aside:first-child, .layout > aside:nth-child(2), .layout > main { grid-column: 1; grid-row: auto; }
+  .navcolumn, .layout > main { grid-column: 1; grid-row: auto; }
+  .navcolumn { position: static; max-height: none; overflow: visible; }
   .sidebar { position: static; max-height: none; }
   .content { max-width: none; padding: 22px; }
   header { padding: 30px 20px 26px; }
@@ -248,6 +261,7 @@ pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; 
     <div class="stat"><strong id="percentDone">0%</strong><span class="muted">прогресс</span></div>
   </div>
   <div class="layout">
+    <div class="navcolumn">
     <aside class="panel sidebar">
       <h2>Направления</h2>
       <input id="search" class="search" type="search" placeholder="Поиск по урокам, задачам…">
@@ -260,6 +274,7 @@ pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; 
       <h2 id="lessonListTitle">Содержание</h2>
       <div id="lessonList"></div>
     </aside>
+    </div>
     <main class="panel content">
       <div class="breadcrumb" id="breadcrumb"></div>
       <div id="lessonContent"><p class="muted">Выбери урок слева.</p></div>
@@ -283,6 +298,30 @@ function inlineMd(s) {
     .replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>")
     .replace(/\*([^*]+)\*/g,"<em>$1</em>");
 }
+function highlightCode(source, lang) {
+  const cpp = /^(cpp|c\+\+|c|h|hpp|cc|cxx)$/i.test(lang || "");
+  const escaped = String(source || "");
+  if (!cpp) return escapeHtml(escaped);
+  const token = /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|#[ \t]*[A-Za-z_]\w*|\b(?:alignas|alignof|asm|auto|break|case|catch|class|concept|const|constexpr|consteval|constinit|continue|co_await|co_return|co_yield|decltype|default|delete|do|else|enum|explicit|export|extern|for|friend|if|inline|mutable|namespace|new|noexcept|operator|private|protected|public|register|reinterpret_cast|requires|return|sizeof|static|static_assert|static_cast|struct|switch|template|this|thread_local|throw|try|typedef|typeid|typename|union|using|virtual|volatile|while|override|final|nullptr|true|false)\b|\b(?:void|bool|char|char8_t|char16_t|char32_t|wchar_t|short|int|long|signed|unsigned|float|double|size_t|std::string|std::string_view|std::vector|std::array|std::map|std::set|std::unique_ptr|std::shared_ptr|std::optional)\b|\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?[uUlLfF]*\b|\b[A-Z_][A-Z0-9_]{2,}\b|[{}()[\];,.?:]|[-+*/%=&|!<>^~]+/g;
+  let out = "", last = 0, match;
+  while ((match = token.exec(escaped)) !== null) {
+    out += escapeHtml(escaped.slice(last, match.index));
+    const value = match[0];
+    let cls = "";
+    if (value.startsWith("//") || value.startsWith("/*")) cls = "tok-comment";
+    else if (value.startsWith('"') || value.startsWith("'")) cls = "tok-string";
+    else if (value.startsWith("#")) cls = "tok-preprocessor";
+    else if (/^(?:true|false|nullptr)$/.test(value) || /^[A-Z_][A-Z0-9_]{2,}$/.test(value)) cls = "tok-constant";
+    else if (/^\d/.test(value)) cls = "tok-number";
+    else if (/^(?:void|bool|char|char8_t|char16_t|char32_t|wchar_t|short|int|long|signed|unsigned|float|double|size_t|std::string|std::string_view|std::vector|std::array|std::map|std::set|std::unique_ptr|std::shared_ptr|std::optional)$/.test(value)) cls = "tok-type";
+    else if (/^(?:alignas|alignof|asm|auto|break|case|catch|class|concept|const|constexpr|consteval|constinit|continue|co_await|co_return|co_yield|decltype|default|delete|do|else|enum|explicit|export|extern|for|friend|if|inline|mutable|namespace|new|noexcept|operator|private|protected|public|register|reinterpret_cast|requires|return|sizeof|static|static_assert|static_cast|struct|switch|template|this|thread_local|throw|try|typedef|typeid|typename|union|using|virtual|volatile|while|override|final)$/.test(value)) cls = "tok-keyword";
+    else if (/^[{}()[\];,.?:]$/.test(value)) cls = "tok-punctuation";
+    else if (/^[-+*/%=&|!<>^~]+$/.test(value)) cls = "tok-operator";
+    out += cls ? '<span class="' + cls + '">' + escapeHtml(value) + '</span>' : escapeHtml(value);
+    last = token.lastIndex;
+  }
+  return out + escapeHtml(escaped.slice(last));
+}
 function richMd(s) {
   const chunks = String(s || "").split(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g);
   let out = "";
@@ -298,7 +337,7 @@ function richMd(s) {
     if (i < chunks.length) {
       const lang = chunks[i++] || "";
       const code = chunks[i++] || "";
-      out += `<pre><code class="language-${escapeHtml(lang)}">${escapeHtml(code.replace(/\n$/,""))}</code></pre>`;
+      out += `<pre><code class="language-${escapeHtml(lang)}">${highlightCode(code.replace(/\n$/,""), lang)}</code></pre>`;
     }
   }
   return out;

@@ -496,7 +496,7 @@ function highlightCode(source, lang) {
   if (!cpp && !shell) return escapeHtml(code);
   const pattern = cpp
     ? /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|#[ \t]*[A-Za-z_]\w*|\b(?:alignas|alignof|asm|auto|bool|break|case|catch|char|char8_t|char16_t|char32_t|class|concept|const|consteval|constexpr|constinit|continue|co_await|co_return|co_yield|decltype|default|delete|do|double|else|enum|explicit|export|extern|false|final|float|for|friend|if|inline|int|long|mutable|namespace|new|noexcept|nullptr|operator|override|private|protected|public|register|reinterpret_cast|requires|return|short|signed|sizeof|static|static_assert|static_cast|struct|switch|template|this|thread_local|throw|true|try|typedef|typeid|typename|union|unsigned|using|virtual|void|volatile|wchar_t|while)\b|\b(?:std::(?:array|byte|deque|map|optional|set|shared_ptr|string|string_view|unique_ptr|unordered_map|unordered_set|vector)|size_t|ptrdiff_t)\b|\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?[uUlLfF]*\b|[{}()[\];,.?:]|[-+*/%=&|!<>^~]+/g
-    : /#[^\n]*|"(?:\\.|[^"\\])*"|'[^']*'|\$\{?[A-Za-z_]\w*\}?|--?[A-Za-z][\w-]*|\b(?:cmake|ctest|g\+\+|clang\+\+|clang|gcc|git|make|ninja|python3|pytest|node|npm|docker|mkdir|cp|rm|ls|cd|sudo|chmod|find|grep|cat|echo)\b/g;
+    : /#[^\n]*|"(?:\\.|[^"\\])*"|'[^']*'|\$\{?[A-Za-z_]\w*\}?|--?[A-Za-z][\w-]*|g\+\+|clang\+\+|\b(?:cmake|ctest|clang|gcc|git|make|ninja|python3|pytest|node|npm|docker|mkdir|cp|rm|ls|cd|sudo|chmod|find|grep|cat|echo)\b/g;
   let result = "";
   let cursor = 0;
   for (const match of code.matchAll(pattern)) {

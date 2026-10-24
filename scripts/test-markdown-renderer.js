@@ -41,7 +41,8 @@ assert.match(tableHtml, /<table>/);
 const mathHtml = richMd("$$\nx^2 + 1\n$$");
 assert.match(mathHtml, /class="math-block"/);
 
-const codeHtml = richMd("~~~cpp\nint main() { return 0; }\n~~~");
+const codeFence = String.fromCharCode(96, 96, 96);
+const codeHtml = richMd(codeFence + "cpp\\nint main() { return 0; }\\n" + codeFence);
 assert.doesNotMatch(codeHtml, /<script>/i);
 
 const untrustedHtml = richMd("<script>alert(1)</script>");

@@ -511,6 +511,10 @@ function inlineMd(source) {
   text = text.replace(/\x60([^\x60]+)\x60/g, (_, code) => reserve("<code>" + escapeHtml(code) + "</code>"));
   text = text.replace(/\\\(([\s\S]+?)\\\)|\$([^\n$]+)\$/g, (_, slashMath, dollarMath) =>
     reserve('<span class="math-inline">' + "\\(" + escapeHtml(slashMath || dollarMath) + "\\)" + "</span>"));
+  // Support Markdown images in prose. Only HTTPS and site-relative paths are allowed.
+  text = text.replace(/!\[([^\]]*)\]\((https:\/\/[^\s)]+|\.\/[^\s)]+|\/(?!\/)[^\s)]+)\)/g, (_, alt, url) =>
+    reserve('<span class="image-block"><img src="' + escapeHtml(url) + '" alt="' + escapeHtml(alt) +
+      '" loading="lazy" decoding="async"><span class="image-caption">' + escapeHtml(alt) + "</span></span>"));
   text = escapeHtml(text);
   text = text.replace(/\[([^\]]+)\]\(((?:https?:\/\/|mailto:|\/|#)[^\s)]+)\)/g, (_, label, url) =>
     '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">' + label + "</a>");
@@ -574,9 +578,9 @@ function renderTextBlocks(source) {
       i += 2;
       const rows = [];
       while (i < lines.length && lines[i].includes("|") && lines[i].trim()) { rows.push(splitTableRow(lines[i])); i++; }
-      out.push("<table><thead><tr>" + headers.map(x => "<th>" + inlineMd(x) + "</th>").join("") +
+      out.push('<div class="table-scroll"><table><thead><tr>' + headers.map(x => "<th>" + inlineMd(x) + "</th>").join("") +
         "</tr></thead><tbody>" + rows.map(row => "<tr>" + headers.map((_, j) => "<td>" + inlineMd(row[j] || "") + "</td>").join("") + "</tr>").join("") +
-        "</tbody></table>");
+        "</tbody></table></div>");
       continue;
     }
     paragraph.push(line);

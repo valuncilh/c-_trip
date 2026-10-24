@@ -66,9 +66,25 @@ jobs:
               assert not re.search(r"^- \*\*(?:Трек|Модуль):\*\* undefined$", source, re.M), f'Invalid source metadata in {path}'
               assert lesson["id"] in source, f'Lesson ID missing from {path}'
 
-              # Check repository-relative Markdown links. HTTPS links are external.
-              for raw_target in re.findall(r"!?(?:\[[^\]]*\])\(([^)]+)\)", source):
-                  target = raw_target.split()[0].split("#", 1)[0]
+              # Check links in prose only. C++ lambdas like [](int) are not Markdown links.
+              prose_lines = []
+              fence_char = None
+              for line in source.splitlines():
+                  fence = re.match(r"^\s*(```+|~~~+)", line)
+                  if fence:
+                      current_char = fence.group(1)[0]
+                      if fence_char is None:
+                          fence_char = current_char
+                      elif fence_char == current_char:
+                          fence_char = None
+                      continue
+                  if fence_char is None:
+                      prose_lines.append(line)
+              prose = "\n".join(prose_lines)
+              prose = re.sub(r"`+[^\n`]*`+", "", prose)
+
+              for raw_target in re.findall(r"\]\(([^)\s]+)(?:\s+[^)]*)?\)", prose):
+                  target = raw_target.split("#", 1)[0]
                   if not target or target.startswith(("https://", "http://", "mailto:", "#", "/")):
                       continue
                   if target.startswith("./content/"):

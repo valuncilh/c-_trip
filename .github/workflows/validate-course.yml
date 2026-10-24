@@ -23,6 +23,7 @@ jobs:
           import json
           import re
           from pathlib import Path
+          from urllib.parse import unquote
           from html.parser import HTMLParser
 
           root = Path(".")
@@ -32,6 +33,8 @@ jobs:
           embedded = json.loads(match.group(1))
           curriculum = json.loads((root / "curriculum.json").read_text(encoding="utf-8"))
           assert embedded == curriculum, "index.html and curriculum.json are out of sync"
+          serialized_data = json.dumps(curriculum, ensure_ascii=False)
+          assert "§" not in serialized_data and "@@@" not in serialized_data, "Unexpanded editorial markers remain in curriculum data"
 
           lessons = [
               lesson
@@ -51,10 +54,28 @@ jobs:
           assert len(nav_ids) == len(lessons) and set(nav_ids) == set(ids), "Navigation does not match curriculum"
 
           missing = []
+          source_texts = {}
           for lesson in lessons:
               path = lesson.get("markdown_path")
               if not path or not (root / path).is_file():
                   missing.append(f'{lesson.get("id")}: {path}')
+                  continue
+              source = (root / path).read_text(encoding="utf-8")
+              source_texts[lesson["id"]] = source
+              assert "§" not in source and "@@@" not in source, f'Unexpanded formatting marker in {path}'
+              assert not re.search(r"^- \\*\\*(?:Трек|Модуль):\\*\\* undefined$", source, re.M), f'Invalid source metadata in {path}'
+              assert lesson["id"] in source, f'Lesson ID missing from {path}'
+
+              # Check repository-relative Markdown links. HTTPS links are external.
+              for raw_target in re.findall(r"!?(?:\\[[^\\]]*\\])\\(([^)]+)\\)", source):
+                  target = raw_target.split()[0].split("#", 1)[0]
+                  if not target or target.startswith(("https://", "http://", "mailto:", "#", "/")):
+                      continue
+                  if target.startswith("./content/"):
+                      candidate = root / unquote(target[2:])
+                  else:
+                      candidate = (root / path).parent / unquote(target)
+                  assert candidate.is_file(), f'Broken Markdown link in {path}: {target}'
           assert not missing, "Missing Markdown sources: " + ", ".join(missing)
 
           project = next(lesson for lesson in lessons if lesson["id"] == "T11-M1-L1")

@@ -84,6 +84,10 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html _site/index.html
+          if [ -d content/images ]; then
+            mkdir -p _site/content
+            cp -R content/images _site/content/images
+          fi
           touch _site/.nojekyll
 
       - name: Upload Pages artifact

@@ -88,3 +88,6 @@ jobs:
 
       - name: Check JavaScript syntax
         run: node --check /tmp/course-script.js
+
+      - name: Test Markdown renderer
+        run: node scripts/test-markdown-renderer.js

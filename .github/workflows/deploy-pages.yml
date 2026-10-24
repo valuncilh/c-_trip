@@ -41,6 +41,16 @@ jobs:
           curriculum = json.loads(Path("curriculum.json").read_text(encoding="utf-8"))
           assert data == curriculum, "index.html and curriculum.json are out of sync"
 
+          project = next(
+              lesson
+              for track in data["tracks"]
+              for module in track["modules"]
+              for lesson in module["lessons"]
+              if lesson["id"] == "T11-M1-L1"
+          )
+          project_markdown = Path(project["markdown_path"]).read_text(encoding="utf-8")
+          assert "signal-analyzer/README.md" in project_markdown, "Project lesson must link the runnable engineering example"
+
           lessons = [
               lesson
               for track in data["tracks"]
@@ -54,6 +64,15 @@ jobs:
           assert len(nav_ids) == len(lessons) and set(nav_ids) == set(ids), "Navigation must include every lesson exactly once"
           assert "function highlightCode(" in html, "Code highlighter definition is missing"
 
+          project = next(
+              lesson
+              for track in data["tracks"]
+              for module in track["modules"]
+              for lesson in module["lessons"]
+              if lesson["id"] == "T11-M1-L1"
+          )
+          assert "signal-analyzer/README.md" in Path(project["markdown_path"]).read_text(encoding="utf-8"), "Project lesson must link the runnable engineering example"
+
           scripts = re.findall(r"<script\b[^>]*>([\s\S]*?)</script>", html)
           assert scripts, "Inline JavaScript was not found"
           Path("/tmp/course-script.js").write_text("\n".join(scripts), encoding="utf-8")
@@ -65,6 +84,10 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html _site/index.html
+          if [ -d content/images ]; then
+            mkdir -p _site/content
+            cp -R content/images _site/content/images
+          fi
           touch _site/.nojekyll
 
       - name: Upload Pages artifact

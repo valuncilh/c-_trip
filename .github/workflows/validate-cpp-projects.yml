@@ -1,0 +1,46 @@
+name: Validate C++ projects
+
+on:
+  push:
+    branches: [main, "work/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  signal-analyzer:
+    name: Build and test signal analyzer
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: content/projects/signal-analyzer
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build with C++20
+        run: cmake --build build --parallel 2
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Run sample input smoke test
+        run: |
+          ./build/signal_analyzer sample_measurements.txt > result.txt
+          grep -Fq 'count: 4' result.txt
+          grep -Fq 'min: 1.180000' result.txt
+          grep -Fq 'max: 1.310000' result.txt
+          grep -Fq 'mean: 1.235000' result.txt
+
+      - name: Reject malformed input
+        run: |
+          if ./build/signal_analyzer INVALID_SAMPLE.txt >stdout.txt 2>stderr.txt; then
+            echo "Expected malformed input to fail" >&2
+            exit 1
+          fi
+          grep -Fq 'Invalid measurement at line 2' stderr.txt

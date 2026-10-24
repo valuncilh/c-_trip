@@ -1,0 +1,130 @@
+name: Validate course content
+
+on:
+  push:
+    branches: [main, "work/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-course:
+    name: Validate curriculum, Markdown, and JavaScript
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate course data and lesson sources
+        run: |
+          python3 - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+          from urllib.parse import unquote
+          from html.parser import HTMLParser
+
+          root = Path(".")
+          html = (root / "index.html").read_text(encoding="utf-8")
+          match = re.search(r"const DATA = (\{[\s\S]*?\});\s*\n", html)
+          assert match, "Embedded course DATA was not found"
+          embedded = json.loads(match.group(1))
+          curriculum = json.loads((root / "curriculum.json").read_text(encoding="utf-8"))
+          assert embedded == curriculum, "index.html and curriculum.json are out of sync"
+          serialized_data = json.dumps(curriculum, ensure_ascii=False)
+          assert "§" not in serialized_data and "@@@" not in serialized_data, "Unexpanded editorial markers remain in curriculum data"
+
+          lessons = [
+              lesson
+              for track in curriculum["tracks"]
+              for module in track["modules"]
+              for lesson in module["lessons"]
+          ]
+          ids = [lesson["id"] for lesson in lessons]
+          assert len(lessons) == 67, f"Expected 67 lessons, found {len(lessons)}"
+          assert len(ids) == len(set(ids)), "Duplicate lesson IDs found"
+
+          nav_ids = [
+              lesson["id"]
+              for track in curriculum.get("navigation", [])
+              for lesson in track.get("lessons", [])
+          ]
+          assert len(nav_ids) == len(lessons) and set(nav_ids) == set(ids), "Navigation does not match curriculum"
+
+          missing = []
+          source_texts = {}
+          for lesson in lessons:
+              path = lesson.get("markdown_path")
+              if not path or not (root / path).is_file():
+                  missing.append(f'{lesson.get("id")}: {path}')
+                  continue
+              source = (root / path).read_text(encoding="utf-8")
+              source_texts[lesson["id"]] = source
+              assert "§" not in source and "@@@" not in source, f'Unexpanded formatting marker in {path}'
+              assert not re.search(r"^- \*\*(?:Трек|Модуль):\*\* undefined$", source, re.M), f'Invalid source metadata in {path}'
+              assert lesson["id"] in source, f'Lesson ID missing from {path}'
+
+              # Check links in prose only. C++ lambdas like [](int) are not Markdown links.
+              prose_lines = []
+              fence_char = None
+              for line in source.splitlines():
+                  fence = re.match(r"^\s*(```+|~~~+)", line)
+                  if fence:
+                      current_char = fence.group(1)[0]
+                      if fence_char is None:
+                          fence_char = current_char
+                      elif fence_char == current_char:
+                          fence_char = None
+                      continue
+                  if fence_char is None:
+                      prose_lines.append(line)
+              prose = "\n".join(prose_lines)
+              prose = re.sub(r"`+[^\n`]*`+", "", prose)
+
+              for raw_target in re.findall(r"\]\(([^)\s]+)(?:\s+[^)]*)?\)", prose):
+                  target = raw_target.split("#", 1)[0]
+                  if not target or target.startswith(("https://", "http://", "mailto:", "#", "/")):
+                      continue
+                  if target.startswith("./content/"):
+                      candidate = root / unquote(target[2:])
+                  else:
+                      candidate = (root / path).parent / unquote(target)
+                  assert candidate.is_file(), f'Broken Markdown link in {path}: {target}'
+          assert not missing, "Missing Markdown sources: " + ", ".join(missing)
+
+          project = next(lesson for lesson in lessons if lesson["id"] == "T11-M1-L1")
+          project_source = (root / project["markdown_path"]).read_text(encoding="utf-8")
+          assert "signal-analyzer/README.md" in project_source, "Project lesson lost its runnable example link"
+
+          assert 'function addLessonOutline(root)' in html, "Lesson outline helper is missing"
+          assert 'Support Markdown images in prose' in html, "Markdown image support is missing"
+          assert 'class="table-scroll"' in html, "Responsive table wrapper is missing"
+          assert 'id="readingProgress"' in html, "Reading progress indicator is missing"
+
+          class MarkupProbe(HTMLParser):
+              def __init__(self):
+                  super().__init__(convert_charrefs=True)
+                  self.ids = []
+              def handle_starttag(self, tag, attrs):
+                  for key, value in attrs:
+                      if key == "id" and value:
+                          self.ids.append(value)
+
+          probe = MarkupProbe()
+          probe.feed(html)
+          duplicate_ids = sorted({item for item in probe.ids if probe.ids.count(item) > 1})
+          assert not duplicate_ids, "Duplicate static HTML ids: " + ", ".join(duplicate_ids)
+
+          scripts = re.findall(r"<script\b[^>]*>([\s\S]*?)</script>", html)
+          assert scripts, "Inline JavaScript was not found"
+          Path("/tmp/course-script.js").write_text("\n".join(scripts), encoding="utf-8")
+          print(f"Validated {len(lessons)} lessons, {len(curriculum['tracks'])} tracks, and all lesson sources.")
+          PY
+
+      - name: Check JavaScript syntax
+        run: node --check /tmp/course-script.js
+
+      - name: Test Markdown renderer
+        run: node scripts/test-markdown-renderer.js

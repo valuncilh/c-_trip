@@ -63,11 +63,11 @@ jobs:
               source = (root / path).read_text(encoding="utf-8")
               source_texts[lesson["id"]] = source
               assert "§" not in source and "@@@" not in source, f'Unexpanded formatting marker in {path}'
-              assert not re.search(r"^- \\*\\*(?:Трек|Модуль):\\*\\* undefined$", source, re.M), f'Invalid source metadata in {path}'
+              assert not re.search(r"^- \*\*(?:Трек|Модуль):\*\* undefined$", source, re.M), f'Invalid source metadata in {path}'
               assert lesson["id"] in source, f'Lesson ID missing from {path}'
 
               # Check repository-relative Markdown links. HTTPS links are external.
-              for raw_target in re.findall(r"!?(?:\\[[^\\]]*\\])\\(([^)]+)\\)", source):
+              for raw_target in re.findall(r"!?(?:\[[^\]]*\])\(([^)]+)\)", source):
                   target = raw_target.split()[0].split("#", 1)[0]
                   if not target or target.startswith(("https://", "http://", "mailto:", "#", "/")):
                       continue
